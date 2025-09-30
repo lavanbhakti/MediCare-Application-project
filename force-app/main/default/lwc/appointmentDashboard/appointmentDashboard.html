@@ -1,0 +1,116 @@
+<template>
+    <lightning-card title="Medicare Appointment Dashboard" icon-name="standard:event">
+        <div class="slds-m-around_medium">
+            <!-- Patient Selection -->
+            <div class="slds-m-bottom_medium">
+                <lightning-combobox
+                    name="patient"
+                    label="Select Patient"
+                    value={selectedPatientId}
+                    placeholder="Choose a patient..."
+                    options={patients}
+                    onchange={handlePatientChange}
+                    required>
+                </lightning-combobox>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="slds-m-bottom_medium">
+                <lightning-button
+                    variant="brand"
+                    label="Create New Appointment"
+                    onclick={handleShowCreateForm}
+                    icon-name="utility:add"
+                    disabled={noPatientSelected}>
+                </lightning-button>
+            </div>
+
+            <!-- Create Appointment Form -->
+            <template if:true={showCreateForm}>
+                <div class="slds-box slds-m-bottom_medium">
+                    <h3 class="slds-text-heading_small slds-m-bottom_small">New Appointment</h3>
+                    
+                    <lightning-input
+                        type="datetime-local"
+                        label="Appointment Date & Time"
+                        value={appointmentDate}
+                        onchange={handleDateChange}
+                        required>
+                    </lightning-input>
+
+                    <lightning-input
+                        type="text"
+                        label="Doctor Name"
+                        value={doctorName}
+                        onchange={handleDoctorChange}
+                        required>
+                    </lightning-input>
+
+                    <lightning-combobox
+                        name="specialization"
+                        label="Specialization"
+                        value={specialization}
+                        placeholder="Select specialization..."
+                        options={specializationOptions}
+                        onchange={handleSpecializationChange}
+                        required>
+                    </lightning-combobox>
+
+                    <lightning-textarea
+                        label="Symptoms"
+                        value={symptoms}
+                        onchange={handleSymptomsChange}>
+                    </lightning-textarea>
+
+                    <div class="slds-m-top_medium">
+                        <lightning-button
+                            variant="brand"
+                            label="Create Appointment"
+                            onclick={handleCreateAppointment}>
+                        </lightning-button>
+                        <lightning-button
+                            variant="neutral"
+                            label="Cancel"
+                            onclick={handleCancelCreate}
+                            class="slds-m-left_small">
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Appointments List -->
+            <template if:true={hasAppointments}>
+                <h3 class="slds-text-heading_small slds-m-bottom_small">Upcoming Appointments</h3>
+                <template for:each={appointments} for:item="appointment">
+                    <div key={appointment.Id} class="slds-box slds-m-bottom_small">
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <p><strong>Appointment:</strong> {appointment.Name}</p>
+                                <p><strong>Date:</strong> {appointment.Appointment_Date__c}</p>
+                                <p><strong>Doctor:</strong> {appointment.Doctor_Name__c}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <p><strong>Specialization:</strong> {appointment.Specialization__c}</p>
+                                <p><strong>Symptoms:</strong> {appointment.Symptoms__c}</p>
+                                <lightning-combobox
+                                    name="status"
+                                    label="Status"
+                                    value={appointment.Status__c}
+                                    options={statusOptions}
+                                    data-id={appointment.Id}
+                                    onchange={handleStatusChange}>
+                                </lightning-combobox>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </template>
+
+            <template if:false={hasAppointments}>
+                <template if:true={selectedPatientId}>
+                    <p class="slds-text-align_center slds-m-top_medium">No upcoming appointments found.</p>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>
